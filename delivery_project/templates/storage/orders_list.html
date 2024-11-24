@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+  Список заказов
+{% endblock %}
+
+{% block content %}
+  <h1 class="pb-2 mb-0">Список заказов</h1>
+</div>
+<div class="col-md-2 text-right">
+  <a href="{% url 'orders:create' %}" class="btn btn-primary">Добавить заказ</a>
+</div>
+</div>
+  <div class="row">
+    <div class="col-md-12">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Дата и время доставки</th>
+            <th scope="col">Статус заказа</th>
+            <th scope="col">Тип заказа</th>
+            <th scope="col">Телефон клиента</th>
+            <th scope="col">Сотрудник</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in orders_list %}
+            <tr>
+              <td><a href="{% url 'orders:detail' order.id %}">{{ order.delivery_datetime|date:"d.M.y H:i" }}</a></td>
+              <td>{{ order.get_order_status_display }}</td>
+              <td>{{ order.get_order_type_display }}</td>
+              <td>{{ order.customer_phone }}</td>
+              <td>{{ order.employee_id }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}

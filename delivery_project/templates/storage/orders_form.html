@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}
+  Настройка заказа
+{% endblock %}
+
+{% block content %}
+  {% with data=order %}
+    {% if '/edit/' in request.path %}
+      <h2>Редактировать заказ {{ data.id }}</h2>
+    {% elif "/delete/" in request.path %}
+      <h2>Удалить заказ {{ object.id }}</h2>
+    {% else %}
+      <h2>Создать новый заказ</h2>
+    {% endif %}
+    <div class="card col-4">
+      <div class="card-header">
+        Настройка заказа
+      </div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          {% if not "/delete/" in request.path %}
+            {% bootstrap_form form %}
+          {% else %}
+            <p>Дата и время доставки: {{ data.delivery_datetime }}</p>
+            <p>Статус заказа: {{ data.order_status }}</p>
+            <p>Тип заказа: {{ data.order_type }}</p>
+            <p>Телефон клиента: {{ data.customer_phone }}</p>
+            <p>Сотрудник: {{ data.employee_id }}</p>
+            <p>Тара: {{ data.container_id }}</p>
+          {% endif %}
+          {% bootstrap_button button_type="submit" content="Готово" %}
+        </form>
+      </div>
+    </div>
+    {% if form.is_valid %}
+      <h2>Заказ {{ data.delivery_datetime }} успешно зарегистрирован в системе!</h2>
+    {% endif %}
+  {% endwith %}
+  <hr>
+  <div>
+    <a href="{% url 'orders:list' %}">Список всех заказов</a>
+  </div>
+{% endblock %}

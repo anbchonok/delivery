@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+  Тара {{ container.container_id }}
+{% endblock %}
+
+{% block content %}
+  <div class="row align-items-center">
+    <div class="col-md-8">
+      <h1 class="pb-2 mb-0">Тара {{ container.container_id }}</h1>
+    </div>
+    <div class="col-md-2 text-right">
+      <a href="{% url 'containers:edit' container.container_id %}" class="btn btn-primary">Редактировать тару</a>
+    </div>
+    <div class="col-md-2 text-right">
+      <a href="{% url 'containers:delete' container.container_id %}" class="btn btn-primary">Удалить тару</a>
+    </div>
+  </div>
+  
+  <div class="row mt-3">
+    <div class="col-12 col-md-6">
+      <h2>Основная информация</h2>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">Объем тары: {{ container.container_volume }} литров</li>
+        <li class="list-group-item">Тип тары: {{ container.container_type }}</li>
+        <li class="list-group-item">Доступность: {% if container.container_availability %} Доступна {% else %} Недоступна {% endif %}</li>
+      </ul>
+    </div>
+  </div>
+{% endblock %}

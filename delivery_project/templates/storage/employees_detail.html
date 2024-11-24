@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+  Сотрудник {{ employee.employee_id }}
+{% endblock %}
+
+{% block content %}
+  <div class="row align-items-center">
+    <div class="col-md-8">
+      <h1 class="pb-2 mb-0">Сотрудник {{ employee.employee_id }}</h1>
+    </div>
+    <div class="col-md-2 text-right">
+      <a href="{% url 'employees:edit' employee.employee_id %}" class="btn btn-primary">Редактировать сотрудника</a>
+    </div>
+    <div class="col-md-2 text-right">
+      <a href="{% url 'employees:delete' employee.employee_id %}" class="btn btn-primary">Удалить сотрудника</a>
+    </div>
+  </div>
+  
+  <div class="row mt-3">
+    <div class="col-12 col-md-6">
+      <h2>Основная информация</h2>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">ФИО: {{ employee.employee_fio }}</li>
+        <li class="list-group-item">Должность: {{ employee.employee_position }}</li>
+        <li class="list-group-item">График работы: {{ employee.employee_schedule }}</li>
+      </ul>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+Клиент {{ client.fio }}
+{% endblock %}
+
+{% block content %}
+  <div class="row align-items-center">
+    <div class="col-md-8">
+      <h1 class="pb-2 mb-0">Клиент {{ client.fio }}</h1>
+    </div>
+    <div class="col-md-2 text-right">
+        <a href="{% url 'clients:edit' client.customer_phone %}" class="btn btn-primary">Редактировать клиента</a>
+    </div>
+    <div class="col-md-2 text-right">
+        <a href="{% url 'clients:delete' client.customer_phone %}" class="btn btn-danger">Удалить клиента</a>
+    </div>
+  </div>
+  
+  <div class="row mt-3">
+    <div class="col-12 col-md-6">
+      <h2>Последний заказ</h2>
+      {% if order %}
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">Тара: {% if order.container_id %}{{ order.container_id.container_type }}{% else %} ---{% endif %}</li>
+          <li class="list-group-item">Объем тары: {% if order.container_id %}{{ order.container_id.container_volume }}{% else %} ---{% endif %}</li>
+          <li class="list-group-item">Статус заказа: {{ order.order_status }}</li>
+          <li class="list-group-item">Тип заказа: {{ order.order_type }}</li>
+          <li class="list-group-item">Тип заказа: {% if order.order_type == 'абонемент на 30 дней' %}30{% elif order.order_type == 'абонемент на полгода' %}180{% elif order.order_type == 'абонемент на год' %}365{% else %}1{% endif %} дней</li>
+          <li class="list-group-item">Дата доставки: {{ order.delivery_datetime|date:"d.M.y H:i" }}</li>
+          <li class="list-group-item">Сотрудник: {% if order.employee_id %}{{ order.employee_id.employee_fio }}{% else %} ---{% endif %}</li>
+        </ul>
+      {% else %}
+        <p>Клиент не имеет заказов.</p>
+      {% endif %}
+    </div>
+
+    <div class="col-12 col-md-6">
+      <h2>Основная информация</h2>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">ФИО: {{ client.fio }}</li>
+        <li class="list-group-item">Адрес: {{ client.address }}</li>
+        <li class="list-group-item">Телефон: {{ client.customer_phone }}</li>
+        <li class="list-group-item">Статус: {{ client.get_status_display }}</li>
+      </ul>
+    </div>
+  </div>
+{% endblock %}

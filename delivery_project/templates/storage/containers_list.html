@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+  Список тар
+{% endblock %}
+
+{% block content %}
+  <div class="row align-items-center">
+    <div class="col-md-10">
+      <h1 class="pb-2 mb-0">Список тары</h1>
+    </div>
+    <div class="col-md-2 text-right">
+      <a href="{% url 'containers:create' %}" class="btn btn-primary">Добавить тару</a>
+    </div>
+  </div>
+  
+  <div class="row">
+    <div class="col-md-12">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">ID Тары</th>
+            <th scope="col">Объем тары</th>
+            <th scope="col">Тип тары</th>
+            <th scope="col">Доступность</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for container in containers_list %}
+            <tr>
+              <td><a href="{% url 'containers:detail' container.container_id %}">{{ container.container_id }}</a></td>
+              <td>{{ container.container_volume }}</td>
+              <td>{{ container.container_type }}</td>
+              <td>{{ container.container_availability|yesno:"Доступно,Недоступно" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}

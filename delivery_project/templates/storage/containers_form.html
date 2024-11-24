@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}
+  Настройка тары
+{% endblock %}
+
+{% block content %}
+  {% with data=form.instance %}
+    {% if '/edit/' in request.path %}
+      <h2>Редактировать тару {{ data.container_id }}</h2>
+    {% elif "/delete/" in request.path %}
+      <h2>Удалить тару {{ object.container_id }}</h2>
+    {% else %}
+      <h2>Зарегистрировать тару</h2>
+    {% endif %}
+    
+    <div class="card col-4">
+      <div class="card-header">
+        Настройка тары
+      </div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          {% if not "/delete/" in request.path %}
+            {% bootstrap_form form %}
+          {% else %}
+            <p>ID: {{ object.container_id }}</p>
+            <p>Объем: {{ object.container_volume }}</p>
+            <p>Тип: {{ object.container_type }}</p>
+            <p>Доступность: {{ object.container_availability|yesno:"Доступен,Недоступен" }}</p>
+          {% endif %}
+          {% bootstrap_button button_type="submit" content="Готово" %}
+        </form>
+      </div>
+    </div>
+    
+    {% if form.is_valid %}
+      <h2>Тара {{ data.container_type }} зарегистрирован в системе!</h2>
+    {% endif %}
+  {% endwith %}
+  
+  <hr>
+  <div>
+    <a href="{% url 'containers:list' %}">Список всех тар</a>
+  </div>
+{% endblock %}

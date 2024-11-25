@@ -99,9 +99,7 @@ class Employees(models.Model):
 
 class Orders(models.Model):
     id = models.AutoField(primary_key=True)
-    delivery_datetime = models.DateTimeField(
-        'Дата и время доставки'
-    )
+    delivery_datetime = models.DateTimeField('Дата и время доставки')
     order_status = models.CharField(
         'Статус заказа',
         max_length=20,
@@ -125,20 +123,20 @@ class Orders(models.Model):
     )
     customer_phone = models.ForeignKey(
         Clients,
-        models.SET_NULL,
-        null=True,  # Добавлено
+        on_delete=models.SET_NULL,
+        null=True,
         verbose_name='Телефон клиента'
     )
     employee_id = models.ForeignKey(
         Employees,
-        models.SET_NULL,
+        on_delete=models.SET_NULL,
         null=True,
         verbose_name='Сотрудник'
     )
     container_id = models.ForeignKey(
         Containers,
-        models.SET_NULL,
-        null=True,  # Добавлено
+        on_delete=models.SET_NULL,
+        null=True,
         verbose_name='Тара'
     )
 

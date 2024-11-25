@@ -1,37 +1,36 @@
 {% extends "base.html" %}
-{% load django_bootstrap5 %}
-
+{% load static %}
 {% block title %}
   Список клиентов
 {% endblock %}
 
 {% block content %}
-  <h2>Список всех клиентов</h2>
-  <table class="table">
-    <thead>
-      <tr>
-        <th>ФИО</th>
-        <th>Адрес</th>
-        <th>Телефон</th>
-        <th>Статус</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for client in clients %}
-        <tr>
-          <td>{{ client.fio }}</td>
-          <td>{{ client.address }}</td>
-          <td>{{ client.customer_phone }}</td>
-          <td>{{ client.status }}</td>
-        </tr>
-      {% empty %}
-        <tr>
-          <td colspan="4">Нет зарегистрированных клиентов.</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  <div>
-    <a href="{% url 'clients:create' %}">Добавить нового клиента</a>
+  <h1 class="pb-2 mb-0">Список клиентов</h1>
+  
+  <div class="row">
+    <div class="col-md-12">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            
+            <th scope="col">ФИО</th>
+            <th scope="col">Адрес</th>
+            <th scope="col">Телефон</th>
+            <th scope="col">Статус</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for client in clients_list %}
+            <tr>
+              <td><a href="{% url 'clients:detail' client.customer_phone %}">{{ client.fio }}</a></td>
+              <td>{{ client.fio }}</td>
+              <td>{{ client.address }}</td>
+              <td>{{ client.customer_phone }}</td>
+              <td>{{ client.get_status_display }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 {% endblock %}

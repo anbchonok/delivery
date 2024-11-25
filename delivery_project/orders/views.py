@@ -48,5 +48,5 @@ class OrdersDeleteView(OrdersMixin, DeleteView):
 class OrdersListView(ListView):
     model = Orders
     ordering = 'id'
-    paginate_by = 10
+    #paginate_by = 10
     

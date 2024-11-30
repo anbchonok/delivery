@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block content %}
+
 {% if user.is_authenticated %}
   <div class="row align-items-center">
     <div class="col-md-8">
@@ -22,18 +23,25 @@
 
   <div class="row mt-3">
     <div class="col-12 col-md-6">
-  <h2>Последний заказ</h2>
+      <h2>Заказы сотрудника</h2>
       {% if order %}
         <ul class="list-group list-group-flush">
-          <li class="list-group-item">Клиент: {% if order.client %}{{ order.client.fio }}{% else %} ---{% endif %}</li>
-          <li class="list-group-item">Тара: {% if order.container %}{{ order.container.container_id }}{% else %} ---{% endif %}</li>
-          <li class="list-group-item">Статус заказа: {{ order.order_status }} </li>
-          
+          {% for o in order %}
+            <li class="list-group-item">
+              <strong>Заказ:</strong> {{ o.id }}<br>
+              <strong>Клиент:</strong> {% if o.customer_phone %}{{ o.customer_phone.fio }}{% else %} ---{% endif %}<br>
+              <strong>Тара:</strong> {% if o.container_id %}{{ o.container_id.container_id }}{% else %} ---{% endif %}<br>
+              <strong>Статус заказа:</strong> {{ o.order_status }}<br>
+              <strong>Дата заказа:</strong> {{ o.delivery_datetime|date:"Y-m-d H:i" }}<br>
+            </li>
+          {% endfor %}
         </ul>
       {% else %}
         <p>Сотрудник не имеет заказов.</p>
       {% endif %}
     </div>
+
+
   
     <div class="col-12 col-md-6">
       <h2>Основная информация</h2>
@@ -45,6 +53,6 @@
     </div>
   </div>
   {% else %}
-    Для продолжения работы в системе, пожалуйста, войдите в аккаунт. Для получения новой учетной записи обратитесь к администратору
+    Для продолжения работы в системе, пожалуйста, войдите в аккаунт. Для получения новой учетной записи обратитесь к администратору.
   {% endif %}
 {% endblock %}

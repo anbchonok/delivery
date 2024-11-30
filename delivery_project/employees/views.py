@@ -3,7 +3,7 @@ from django.views.generic import (
 )
 from django.urls import reverse_lazy
 
-from storage.models import Employees
+from storage.models import Employees, Orders
 
 
 class EmployeesMixin:
@@ -23,8 +23,14 @@ class EmployeesDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['employee'] = self.object
+        my_employee = self.object
+        my_orders = Orders.objects.select_related('customer_phone', 'employee_id').filter(employee_id=my_employee).order_by('-order_status')
+        context['order'] = my_orders
+        context['employee'] = my_employee  # Добавляем объект сотрудника в контекст
         return context
+
+
+
 
 
 class EmployeesUpdateView(EmployeesMixin, UpdateView):
@@ -42,5 +48,5 @@ class EmployeesDeleteView(EmployeesMixin, DeleteView):
 
 class EmployeesListView(ListView):
     model = Employees
-    ordering = 'employee_id'
-    paginate_by = 10
+    #ordering = 'employee_id'
+    #paginate_by = 10

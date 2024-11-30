@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block content %}
+{% if user.is_authenticated %} 
   <div class="row align-items-center">
     <div class="col-md-8">
       <h1 class="pb-2 mb-0">{{ client.fio }}</h1>
@@ -15,17 +16,36 @@
     <div class="col-md-2 text-right">
         <a href="{% url 'clients:delete' client.customer_phone %}" class="btn btn-primary">Удалить клиента</a>
     </div>
-  </div>
+    {% endif %}
+  </div> 
   
   <div class="row mt-3">
+    <div class="col-12 col-md-6">
+      <h2>Последний заказ</h2>
+      {% if client.fio %}
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">ФИО: {{ client.fio }}</li>
+        <li class="list-group-item">Телефон: {{ client.customer_phone  }}</li>
+        <li class="list-group-item">Тип заказа: {{ client.order_type  }}</li>
+        <li class="list-group-item">Дата доставки: {{ client.delivery_datetime }}</li>
+        <li class="list-group-item">Статус заказа:  {{ client.order_status }}</li>
+        <li class="list-group-item">ФИО сотрудника: {{ client.employee_fio }}</li>
+        <li class="list-group-item">График сотрудника: {{ client.employee_schedule }}</li>
+      </ul>
+      {% else %}
+        <p>Клиент не имеет заказов.</p>
+      {% endif %}
+    </div>
     <div class="col-12 col-md-6">
       <h2>Основная информация</h2>
       <ul class="list-group list-group-flush">
         <li class="list-group-item">ФИО: {{ client.fio }}</li>
-        <li class="list-group-item">Адрес: {{ client.address }}</li>
         <li class="list-group-item">Телефон: {{ client.customer_phone }}</li>
-        <li class="list-group-item">Статус: {{ client.status }}</li>
+        {% comment %} <li class="list-group-item">Адрес: {{ client.address }}</li>
+        <li class="list-group-item">Статус: {{ client.status }}</li> {% endcomment %}
       </ul>
     </div>
   </div>
 {% endblock %}
+
+

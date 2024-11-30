@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block content %}
+{% if user.is_authenticated %}
   {% with data=order %}
     {% if '/edit/' in request.path %}
       <h2>Редактировать заказ {{ data.id }}</h2>
@@ -16,7 +17,7 @@
     {% endif %}
     <div class="card col-4">
       <div class="card-header">
-        Настройка заказа
+        Настройка заказа 
       </div>
       <div class="card-body">
         <form method="post">
@@ -24,12 +25,14 @@
           {% if not "/delete/" in request.path %}
             {% bootstrap_form form %}
           {% else %}
-            <p>Дата и время доставки: {{ data.delivery_datetime }}</p>
-            <p>Статус заказа: {{ data.order_status }}</p>
-            <p>Тип заказа: {{ data.order_type }}</p>
-            <p>Телефон клиента: {{ data.customer_phone }}</p>
-            <p>Сотрудник: {{ data.employee_id }}</p>
-            <p>Тара: {{ data.container_id }}</p>
+            <p>Дата и время доставки: {{ object.delivery_datetime }}</p>
+            <p>Статус заказа: {{ object.order_status }}</p>
+            <p>Тип заказа: {{ object.order_type }}</p>
+            {% comment %} <p>Телефон клиента: {{ object.client }}</p>
+            <p>Сотрудник: {{ object.employee }}</p>
+            <p>Тара: {{ object.container }}</p> {% endcomment %}
+            <p>Номер заказа: {{ object.id }}</p>
+              
           {% endif %}
           {% bootstrap_button button_type="submit" content="Готово" %}
         </form>
@@ -43,4 +46,7 @@
   <div>
     <a href="{% url 'orders:list' %}">Список всех заказов</a>
   </div>
+  {% else %}
+  Для продолжения работы в системе, пожалуйста, войдите в аккаунт. Для получения новой учетной записи обратитесь к администратору
+{% endif %}
 {% endblock %}

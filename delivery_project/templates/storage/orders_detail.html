@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block content %}
+{% if user.is_authenticated %}
   <div class="row align-items-center">
     <div class="col-md-8">
       <h1 class="pb-2 mb-0">Заказ {{ orders.id }}</h1>
@@ -12,9 +13,11 @@
     <div class="col-md-2 text-right">
       <a href="{% url 'orders:edit' orders.id %}" class="btn btn-primary">Редактировать заказ</a>
     </div>
+    {% if user.is_superuser %}
     <div class="col-md-2 text-right">
       <a href="{% url 'orders:delete' orders.id %}" class="btn btn-primary">Удалить заказ</a>
     </div>
+    {% endif %}
   </div>
   
   <div class="row mt-3">
@@ -22,10 +25,10 @@
       <h2>Информация о заказе</h2>
       <ul class="list-group list-group-flush">
         <li class="list-group-item">Статус заказа: {{ orders.order_status }}</li>
-        <li class="list-group-item">Тип заказа: {{ orders.order_type }}</li>
-        <li class="list-group-item">Телефон клиента: {% if orders.customer_phone %}{{ orders.customer_phone.phone_number }}{% else %} ---{% endif %}</li>
-        <li class="list-group-item">Сотрудник: {% if orders.employee_id %}{{ orders.employee_id.name }}{% else %} ---{% endif %}</li>
-        <li class="list-group-item">Тара: {% if orders.container_id %}{{ orders.container_id.type }}{% else %} ---{% endif %}</li>
+        <li class="list-group-item">Дата и время доставки заказа: {{ orders.delivery_datetime }}</li>
+        <li class="list-group-item">Телефон клиента:{% if client %}{{ client.customer_phone }}{% else %} ---{% endif %}</li>
+        <li class="list-group-item">Сотрудник: {% if employee %}{{ employee.employee_fio }} {% else %} ---{% endif %}</li>
+        <li class="list-group-item">Тара: {% if containers %}{{ containers.container_type }}{% else %} ---{% endif %}</li>
       </ul>
     </div>
 
@@ -33,7 +36,12 @@
       <h2>Основная информация</h2>
       <ul class="list-group list-group-flush">
         <li class="list-group-item">Номер заказа: {{ orders.id }}</li>
+        <li class="list-group-item">Тип заказа: {{ orders.order_type }}</li>
+        
       </ul>
     </div>
   </div>
+  {% else %}
+  Для продолжения работы в системе, пожалуйста, войдите в аккаунт. Для получения новой учетной записи обратитесь к администратору
+{% endif %}
 {% endblock %}

@@ -2,7 +2,7 @@ from django.views.generic import (
     CreateView, DeleteView, DetailView, ListView, UpdateView
 )
 from django.urls import reverse_lazy
-from storage.models import Employees, Containers, Clients, Orders
+from storage.models import Orders
 
 
 class OrdersMixin:
@@ -22,9 +22,9 @@ class OrdersDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         my_order = self.object
-        context['employee'] = my_order.employee_id  # Исправлено
-        context['client'] = my_order.customer_phone  # Исправлено на правильное поле
-        context['containers'] = my_order.container_id  # Исправлено на правильное поле
+        context['employee'] = my_order.employee_id  
+        context['client'] = my_order.customer_phone  
+        context['containers'] = my_order.container_id  
 
         return context
 

@@ -3,8 +3,8 @@ from django.views.generic import (
 )
 from django.urls import reverse_lazy
 
-from storage.models import Containers, Employees, Orders, Clients
-
+from storage.models import Containers, Orders
+from datetime import datetime, timedelta
 
 class ContainersMixin:
     model = Containers
@@ -23,9 +23,18 @@ class ContainersDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         my_container = self.object
-        my_orders = Orders.objects.filter(container_id=my_container).select_related('employee_id', 'customer_phone')
-        context['orders'] = my_orders
-        context['container'] = my_container  # Убедитесь, что объект передается в контекст
+        my_orders = Orders.objects.select_related('employee').select_related('client').filter(container_id=my_container).order_by('-order_status')
+        today = datetime.now().date()
+        thirty_days_ago = today - timedelta(days=30)
+        try:
+            context['active_orders_count'] = my_orders.values('order_status').filter(order_status__gt=today).count()
+        except IndexError:
+            context['active_orders_count'] = 0
+      
+        try:
+            context['created_orders_all'] = my_orders.count()
+        except IndexError:
+            context['created_orders_all'] = 0
         return context
 
 
@@ -43,4 +52,4 @@ class ContainersDeleteView(ContainersMixin, DeleteView):
 class ContainersListView(ListView):
     model = Containers
     ordering = 'container_id'
-    paginate_by = 10
+    #paginate_by = 10

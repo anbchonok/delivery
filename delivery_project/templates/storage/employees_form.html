@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block content %}
+{% if user.is_authenticated %}
   {% with data=form.instance %}
     {% if '/edit/' in request.path %}
       <h2>Редактировать сотрудника {{ data.employee_id }}</h2>
@@ -41,4 +42,7 @@
   <div>
     <a href="{% url 'employees:list' %}">Список всех сотрудников</a>
   </div>
+  {% else %}
+    Для продолжения работы в системе, пожалуйста, войдите в аккаунт. Для получения новой учетной записи обратитесь к администратору
+  {% endif %}
 {% endblock %}

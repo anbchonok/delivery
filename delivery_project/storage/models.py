@@ -1,5 +1,7 @@
 from django.db import models
 from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 
 class Clients(models.Model):
@@ -54,6 +56,12 @@ class Containers(models.Model):
     container_type = models.CharField(
         'Тип тары',
         max_length=100,
+        choices=[
+            ('пластиковая бутылка', 'Пластиковая бутылка'),
+            ('стеклянная бутылка', 'Стеклянная бутылка'),
+            ('канистра', 'Канистра'),
+            ('ёмкость для куллера', 'Ёмкость для куллера'),
+        ],
         null=False
     )
     container_availability = models.BooleanField(
@@ -67,6 +75,21 @@ class Containers(models.Model):
 
     def __str__(self):
         return f"{self.container_type} (ID: {self.container_id})"
+    
+    def clean(self):
+        super().clean()
+        # Устанавливаем ограничения по объему для каждого типа контейнера
+        volume_limits = {
+            'пластиковая бутылка': (0, 2000),  # Объем в миллилитрах
+            'стеклянная бутылка': (0, 1500),
+            'канистра': (1000, 20000),
+            'ёмкость для куллера': (5000, 20000),
+        }
+
+        min_volume, max_volume = volume_limits.get(self.container_type, (0, float('inf')))
+        
+        if self.container_volume < min_volume or self.container_volume > max_volume:
+            raise ValidationError(f"Объем для типа '{self.container_type}' должен быть в диапазоне от {min_volume} до {max_volume}.")
 
 
 class Employees(models.Model):
@@ -81,11 +104,21 @@ class Employees(models.Model):
     employee_position = models.CharField(
         'Должность сотрудника',
         max_length=50,
+        choices=[
+            ('менеджер', 'Менеджер'),
+            ('курьер', 'Курьер'),
+            ('оператор', 'Оператор'),
+        ],
         null=False
     )
     employee_schedule = models.CharField(
         'График работы',
         max_length=255,
+        choices=[
+            ('Пн-Пт, 9:00-18:00', 'Пн-Пт, 9:00-18:00'),
+            ('Пн-Вс, 9:00-22:00', 'Пн-Вс, 9:00-22:00'),
+            ('Пн-Вс, 8:00-20:00', 'Пн-Вс, 8:00-20:00'),
+        ],
         null=False
     )
 
@@ -99,7 +132,7 @@ class Employees(models.Model):
 
 class Orders(models.Model):
     id = models.AutoField(primary_key=True)
-    delivery_datetime = models.DateTimeField('Дата и время доставки')
+    delivery_datetime = models.DateTimeField('Дата и время доставки', default=timezone.now)
     order_status = models.CharField(
         'Статус заказа',
         max_length=20,
@@ -123,19 +156,19 @@ class Orders(models.Model):
     )
     customer_phone = models.ForeignKey(
         Clients,
-        on_delete=models.SET_NULL,
+        models.SET_NULL,
         null=True,
         verbose_name='Телефон клиента'
     )
     employee_id = models.ForeignKey(
         Employees,
-        on_delete=models.SET_NULL,
+        models.SET_NULL,
         null=True,
         verbose_name='Сотрудник'
     )
     container_id = models.ForeignKey(
         Containers,
-        on_delete=models.SET_NULL,
+        models.SET_NULL,
         null=True,
         verbose_name='Тара'
     )

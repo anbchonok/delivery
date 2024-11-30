@@ -15,13 +15,33 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.contrib.auth.forms import UserCreationForm
+from django.views.generic.edit import CreateView
+from django.urls import include, path, reverse_lazy
 
 urlpatterns = [
+    # Приложение для работы с админ зоной
     path('admin/', admin.site.urls),
-    path('', include('homepage.urls')),
-    path('cells/', include('containers.urls')),
-    path('clients/', include('clients.urls')),
-    path('orders/', include('orders.urls')),
-    path('tariffs/', include('employees.urls')),
+    # Приложения для работы с пользователями
     path('auth/', include('django.contrib.auth.urls')),
+    # Приложение для главной страницы
+    path('', include('homepage.urls')),
+    # Приложение для работы с тарами
+    path('containers/', include('containers.urls')),
+    # Приложение для работы с клиентами
+    path('clients/', include('clients.urls')),
+    # Приложение для работы с заказами
+    path('orders/', include('orders.urls')),
+    # Приложение для работы с сотрудниками
+    path('employees/', include('employees.urls')),
+    path(
+        'auth/registration/', 
+        CreateView.as_view(
+            template_name='registration/registration_form.html',
+            form_class=UserCreationForm,
+            success_url=reverse_lazy('homepage:index'),
+        ),
+        name='registration',
+    ),
 ]
+

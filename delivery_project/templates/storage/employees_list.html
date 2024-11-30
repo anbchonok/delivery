@@ -5,11 +5,16 @@
 {% endblock %}
 
 {% block content %}
-  <h1 class="pb-2 mb-0">Список сотрудников</h1>
-</div>
-<div class="col-md-2 text-right">
-  <a href="{% url 'employees:create' %}" class="btn btn-primary">Добавить сотрудника</a>
-</div>
+{% if user.is_authenticated %}
+<div class="row align-items-center">
+  <div class="col-md-10">
+    <h1 class="pb-2 mb-0">Список сотрудников</h1>
+  </div>
+  {% if user.is_superuser %}
+  <div class="col-md-2 text-right">
+    <a href="{% url 'employees:create' %}" class="btn btn-primary">Добавить сотрудника</a>
+  </div>
+  {% endif %}
 </div>
   <div class="row">
     <div class="col-md-12">
@@ -35,4 +40,7 @@
       </table>
     </div>
   </div>
+  {% else %}
+    Для продолжения работы в системе, пожалуйста, войдите в аккаунт. Для получения новой учетной записи обратитесь к администратору
+  {% endif %}
 {% endblock %}

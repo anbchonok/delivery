@@ -1,0 +1,120 @@
+Процедура для обновления клиента
+Эта процедура будет обновлять информацию о клиенте.
+
+CREATE OR REPLACE PROCEDURE update_clients(
+    p_fio VARCHAR,            -- Переменные процедуры с явными именами
+    p_address VARCHAR,
+    p_customer_phone VARCHAR,
+    p_status VARCHAR
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    UPDATE storage_clients
+    SET
+        address = p_address,          -- Используйте p_ для обозначения параметров
+        customer_phone = p_customer_phone,
+        status = p_status
+    WHERE
+        fio = p_fio;                 -- И здесь также
+END;
+$$;
+
+
+
+Процедура для удаления клиента
+Эта процедура будет удалять клиента по его идентификатору.
+
+CREATE OR REPLACE PROCEDURE delete_client(client_phone VARCHAR)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    DELETE FROM storage_clients WHERE customer_phone = client_phone;
+END;
+$$;
+
+Процедура для добавления клиента
+
+CREATE OR REPLACE PROCEDURE insert_clients(
+    fio VARCHAR(100),
+    address VARCHAR(200),
+    customer_phone VARCHAR(20),
+    status VARCHAR(20)
+)
+AS $$
+BEGIN 
+    INSERT INTO storage_clients ("fio", "address", "customer_phone", "status")
+    VALUES(fio, address, customer_phone, status);
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+
+Табличная функция для вывода клиентов
+
+CREATE OR REPLACE FUNCTION select_clients()
+RETURNS TABLE(fio VARCHAR, address VARCHAR, customer_phone VARCHAR, status VARCHAR)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT c.fio, c.address, c.customer_phone, c.status
+    FROM storage_clients c;
+END;
+$$;
+
+
+
+Скалярная функция, которая подсчитывает количество активных клиентов
+
+CREATE OR REPLACE FUNCTION active_clients()
+ RETURNS integer
+ LANGUAGE plpgsql
+AS $$
+DECLARE
+	result int;
+BEGIN 
+	SELECT INTO result COUNT(*) 
+	FROM storage_clients
+	WHERE status='активный';
+	RETURN result;
+END;
+$$;
+
+
+
+
+Представление, которое выводит информацию из 4-х таблиц
+
+CREATE OR REPLACE VIEW storage_view AS
+SELECT 
+    c.container_volume, c.container_type,
+    cl.fio, cl.customer_phone, 
+    o.order_type, o.delivery_datetime, o.order_status,  
+	e.employee_fio, e.employee_schedule
+FROM storage_orders o
+JOIN storage_employees e ON e.employee_id = o.employee_id_id 
+JOIN storage_containers c ON c.container_id = o.container_id_id  
+JOIN storage_clients cl ON cl.customer_phone = o.customer_phone_id;
+
+Триггер перед удалением клиента
+
+--создание триггера перед удалением клиента
+CREATE OR REPLACE FUNCTION func_for_trig() 
+RETURNS TRIGGER AS $$
+BEGIN
+	UPDATE storage_clients 
+    SET fio = 'Клиент удален',
+		address = 'удален',
+            status='ушедший'
+    WHERE customer_phone = OLD.customer_phone;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER before_client_delete
+BEFORE DELETE ON storage_clients
+FOR EACH ROW
+EXECUTE FUNCTION func_for_trig();
+

@@ -26,7 +26,7 @@
       <ul class="list-group list-group-flush">
         <li class="list-group-item">Статус заказа: {{ orders.order_status }}</li>
         <li class="list-group-item">Дата и время доставки заказа: {{ orders.delivery_datetime }}</li>
-        <li class="list-group-item">Телефон клиента:{% if client %}{{ client.customer_phone }}{% else %} ---{% endif %}</li>
+        <li class="list-group-item">Телефон клиента: {% if client %}{{ client.customer_phone }}{% else %} ---{% endif %}</li>
         <li class="list-group-item">Сотрудник: {% if employee %}{{ employee.employee_fio }} {% else %} ---{% endif %}</li>
         <li class="list-group-item">Тара: {% if containers %}{{ containers.container_type }}{% else %} ---{% endif %}</li>
       </ul>
@@ -42,6 +42,6 @@
     </div>
   </div>
   {% else %}
-  Для продолжения работы в системе, пожалуйста, войдите в аккаунт. Для получения новой учетной записи обратитесь к администратору
+  Для продолжения работы в системе, пожалуйста, войдите в аккаунт или зарегистрируйтесь.
 {% endif %}
 {% endblock %}

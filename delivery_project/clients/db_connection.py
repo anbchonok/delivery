@@ -13,9 +13,11 @@ class DatabaseConnection:
         )
         self.cursor = self.connection.cursor()
 
-    def execute(self, query, params=None):
+    def execute1(self, query, params=None):
         self.cursor.execute(query, params)
-        return self.cursor.fetchall()
+        if self.cursor.description:  
+            return self.cursor.fetchall()
+        return None 
 
     def commit(self):
         self.connection.commit()

@@ -2,18 +2,31 @@ from django.db import models
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from datetime import timedelta
 
 
 class Clients(models.Model):
     fio = models.CharField(
         'ФИО клиента',
         max_length=100,
-        null=False
+        null=False,
+        validators=[
+            RegexValidator(
+                regex='^[А-Яа-яЁё\s]+$',
+                message='ФИО должно содержать только буквы и пробелы.'
+            )
+        ]
     )
     address = models.CharField(
         'Адрес клиента',
         max_length=200,
-        null=False
+        null=False,
+        validators=[
+            RegexValidator(
+                regex='^[А-Яа-яЁё\s]+$',
+                message='Адрес должен содержать только буквы и пробелы.'
+            )
+        ]
     )
     customer_phone = models.CharField(
         'Телефон клиента',
@@ -42,7 +55,7 @@ class Clients(models.Model):
         verbose_name_plural = 'Клиенты'
 
     def __str__(self):
-        return self.fio
+        return self.customer_phone
 
 
 class Containers(models.Model):
@@ -80,8 +93,8 @@ class Containers(models.Model):
         super().clean()
         # Устанавливаем ограничения по объему для каждого типа контейнера
         volume_limits = {
-            'пластиковая бутылка': (0, 2000),  # Объем в миллилитрах
-            'стеклянная бутылка': (0, 1500),
+            'пластиковая бутылка': (500, 2000),  # Объем в миллилитрах
+            'стеклянная бутылка': (250, 1500),
             'канистра': (1000, 20000),
             'ёмкость для куллера': (5000, 20000),
         }
@@ -99,7 +112,13 @@ class Employees(models.Model):
     employee_fio = models.CharField(
         'ФИО сотрудника',
         max_length=100,
-        null=False
+        null=False,
+        validators=[
+            RegexValidator(
+                regex='^[А-Яа-яЁё\s]+$',
+                message='ФИО должно содержать только буквы и пробелы.'
+            )
+        ]
     )
     employee_position = models.CharField(
         'Должность сотрудника',
@@ -179,3 +198,14 @@ class Orders(models.Model):
 
     def __str__(self):
         return f"Заказ от {self.delivery_datetime} для {self.customer_phone}"
+        
+    def clean(self):
+        super().clean()  # Вызов метода родительского класса для выполнения стандартной валидации
+        now = timezone.now()  # Получаем текущее время
+        one_month_later = now + timedelta(days=30)  # Вычисляем дату через месяц
+        # Проверка, что дата доставки не в прошлом
+        if self.delivery_datetime < now:
+            raise ValidationError('Дата и время доставки не могут быть в прошлом.')
+        # Проверка, что дата доставки не более чем через месяц
+        if self.delivery_datetime > one_month_later:
+            raise ValidationError('Нельзя оформить заказ на месяц и больше вперед.')

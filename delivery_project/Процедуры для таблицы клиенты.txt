@@ -96,7 +96,7 @@ SELECT
 FROM storage_orders o
 JOIN storage_employees e ON e.employee_id = o.employee_id_id 
 JOIN storage_containers c ON c.container_id = o.container_id_id  
-JOIN storage_clients cl ON cl.customer_phone = o.customer_phone_id;
+RIGHT JOIN storage_clients cl ON cl.customer_phone = o.customer_phone_id;
 
 Триггер перед удалением клиента
 

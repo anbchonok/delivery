@@ -4,9 +4,10 @@ from .forms import ClientsForm
 from storage.models import Clients
 from .db_connection import DatabaseConnection
 
+
 def detail(request, pk=None):
     db = DatabaseConnection()
-    results = db.execute('''
+    results = db.execute1('''
         SELECT
             container_volume, container_type,
             fio, customer_phone, 
@@ -15,15 +16,13 @@ def detail(request, pk=None):
         FROM storage_view
         WHERE customer_phone = %s;
     ''', (pk,))
-    
     column_names = [description[0] for description in db.cursor.description]
     client = [{column: value for column, value in zip(column_names, row)} for row in results][0]
-    
     db.close()
-
     context = {'client': client}
     template_name = 'clients/clients_detail.html'
     return render(request, template_name, context)
+
 
 def client(request, pk=None):
     if pk is not None:
@@ -40,9 +39,9 @@ def client(request, pk=None):
         
         db = DatabaseConnection()
         if pk is not None:
-            db.execute(f'CALL update_clients( \'{fio}\', \'{address}\', \'{customer_phone}\', \'{status}\');')
+            db.execute1(f'CALL update_clients( \'{fio}\', \'{address}\', \'{customer_phone}\', \'{status}\');')
         else:
-            db.execute(f'CALL insert_clients( \'{fio}\', \'{address}\', \'{customer_phone}\', \'{status}\');')
+            db.execute1(f'CALL insert_clients( \'{fio}\', \'{address}\', \'{customer_phone}\', \'{status}\');')
         db.commit()
         db.close()
     return render(request, 'clients/clients_form.html', context)
@@ -53,7 +52,7 @@ def delete_client(request, pk):
     context = {'form': form}
     if request.method == 'POST':
         db = DatabaseConnection()
-        db.execute(f'CALL delete_client(%s);', (pk,))
+        db.execute1(f'CALL delete_client(%s);', (pk,))
         db.commit()
         db.close()
         return redirect('clients:list')
@@ -65,22 +64,16 @@ def delete_client(request, pk):
     form = ClientsForm(instance=instance)
     context = {'form': form}
     if request.method == 'POST':
-        connection = psycopg2.connect(
-            host="localhost",
-            database="delivery",
-            user="postgres",
-            password="1"
-        )
-        cursor = connection.cursor()
-        cursor.execute(f'CALL delete_client(%s);', (pk,))
-        connection.commit()
-        connection.close()
+        db = DatabaseConnection()
+        db.execute1(f'CALL delete_client(%s);', (pk,))
+        db.commit()
+        db.close()
         return redirect('clients:list')
     return render(request, 'clients/clients_form.html', context)
 
 def list(request):
     db = DatabaseConnection()
-    results = db.execute('SELECT * FROM select_clients();')
+    results = db.execute1('SELECT * FROM select_clients();')
     column_names = [description[0] for description in db.cursor.description]
     clients_list = [{column: value for column, value in zip(column_names, row)} for row in results]
     db.close()

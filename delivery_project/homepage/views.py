@@ -12,7 +12,7 @@ def get_client_count():
     
     try:
         # Выполняем запрос к базе данных
-        result = db_connection.execute("SELECT active_clients();")
+        result = db_connection.execute1("SELECT active_clients();")
         
         # Проверяем, есть ли результат и возвращаем его
         if result:
